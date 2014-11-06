@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: bcpc
-# Recipe:: stunnel
+# Recipe:: networking-route-test
 #
 # Copyright 2014, Bloomberg Finance L.P.
 #
@@ -17,27 +17,23 @@
 # limitations under the License.
 #
 
-include_recipe "bcpc::default"
+if node['bcpc']['enabled']['network_tests'] then
 
-package "stunnel4" do
-    action :upgrade
-end
+    cookbook_file "/usr/local/bin/routemon.pl" do
+        source "routemon.pl"
+        owner "root"
+        mode 00755
+    end
 
-bash "enable-defaults-stunnel4" do
-    user "root"
-    code <<-EOH
-        sed --in-place '/^ENABLED=/d' /etc/default/stunnel4
-        echo 'ENABLED=1' >> /etc/default/stunnel4
-    EOH
-    not_if "grep -e '^ENABLED=1' /etc/default/stunnel4"
-end
+    template "/etc/init/routemon.conf" do
+        source "routemon.conf.erb"
+        owner "root"
+        mode "0644"
+    end
 
-template "/etc/stunnel/stunnel.conf" do
-    source "stunnel.conf.erb"
-    mode 00644
-    notifies :restart, "service[stunnel4]", :immediately
-end
+    service "routemon" do
+        provider Chef::Provider::Service::Upstart
+        action :start
+    end
 
-service "stunnel4" do
-    action [:enable, :start]
 end

@@ -6,9 +6,11 @@
     "run_list": [
       "role[Basic]",
       "recipe[bcpc]",
+      "recipe[bcpc::system]",
       "recipe[bcpc::networking]",
       "recipe[bcpc::networking-link-test]",
       "recipe[bcpc::networking-gw-test]",
+      "recipe[bcpc::networking-route-test]",
       "recipe[bcpc::ceph-work]",
       "recipe[bcpc::ceph-rgw]",
       "recipe[bcpc::nova-work]",

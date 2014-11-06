@@ -41,6 +41,7 @@ include_recipe "bcpc::default"
     python-ceilometerclient
     python-mysqldb
     python-six
+    python-ldap
 }.each do |pkg|
     package pkg do
         action :upgrade
@@ -68,6 +69,11 @@ bash "patch-for-heatclient-bugs" do
     code <<-EOH
         cd /usr/lib/python2.7/dist-packages/heatclient
         patch < /tmp/heatclient.patch
+        rv=$?
+        if [ $rv -ne 0 ]; then
+          echo "Error applying patch ($rv) - aborting!"
+          exit $rv
+        fi
         cp /tmp/heatclient.patch .
     EOH
     not_if "test -f /usr/lib/python2.7/dist-packages/heatclient/heatclient.patch"
