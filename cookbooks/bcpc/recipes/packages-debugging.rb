@@ -39,6 +39,7 @@ package "iotop"
 # System troubleshooting tools
 package "htop"
 package "sysstat"
+package "cpufrequtils"
 
 # In precise, sosreport is only in backports.
 apt_repository "backports" do
