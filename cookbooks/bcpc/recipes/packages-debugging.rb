@@ -39,7 +39,21 @@ package "iotop"
 # System troubleshooting tools
 package "htop"
 package "sysstat"
+
+# CPU frequency governor utils
+template "/etc/default/cpufrequtils" do
+  source "cpufrequtils.erb"
+  owner "root"
+  group "root"
+  mode 00644
+  notifies :restart, "service[cpufrequtils]", :delayed
+end
+
 package "cpufrequtils"
+
+service "cpufrequtils" do
+  action [:enable, :start]
+end
 
 # In precise, sosreport is only in backports.
 apt_repository "backports" do
