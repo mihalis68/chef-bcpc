@@ -24,7 +24,7 @@ fi
 ROLE_REQUESTED="$2"
 if [[ -f cluster.txt ]]; then
     while read HOSTNAME MACADDR IPADDR ILOIPADDR DOMAIN ROLE; do
-        if [[ $HOSTNAME = "end" ]]; then
+        if [[ $HOSTNAME = "end" || $ROLE = "bootstrap" ]]; then
             continue
         fi
         if [[ -z "$ROLE_REQUESTED" || "$ROLE" = "$ROLE_REQUESTED"  ]]; then
@@ -42,6 +42,7 @@ if [[ -f cluster.txt ]]; then
             echo $HOST is up
         fi
         ./nodessh.sh $ENVIRONMENT $HOST "chef-client" sudo
+        ./nodessh.sh $ENVIRONMENT $HOST "hup_openstack" sudo	
     done
 fi
 

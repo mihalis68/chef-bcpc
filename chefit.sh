@@ -22,6 +22,7 @@ if [[ -z "$CHEF" ]]; then
     $SCPCMD install-chef.sh   /home/ubuntu
     $SCPCMD finish-worker.sh  /home/ubuntu
     $SCPCMD finish-head.sh    /home/ubuntu
+    $SCPCMD fix-apt.sh        /home/ubuntu
 
     if [[ -n "$(source proxy_setup.sh >/dev/null; echo $PROXY)" ]]; then
         PROXY=$(source proxy_setup.sh >/dev/null; echo $PROXY)
@@ -35,6 +36,9 @@ if [[ -z "$CHEF" ]]; then
             $SSHCMD "mv /tmp/apt.conf /etc/apt/apt.conf" sudo
         fi
     fi
+
+    echo "Fix apt"
+    $SSHCMD "/home/ubuntu/fix-apt.sh" sudo
 
     echo "setup chef"
     $SSHCMD  "/home/ubuntu/install-chef.sh" sudo
