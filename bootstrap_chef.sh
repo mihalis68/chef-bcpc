@@ -86,7 +86,7 @@ if [[ -z $VAGRANT ]]; then
     ssh-keygen -N "" -f $KEYFILE
   fi
   echo "Running rsync of non-Vagrant install"
-  rsync  $RSYNCEXTRA -avP -e "ssh -i $KEYFILE" --exclude vbox --exclude vmware --exclude $KEYFILE --exclude .chef . ${SSH_USER}@$IP:chef-bcpc 
+  rsync  $RSYNCEXTRA -avP -e "ssh -i $KEYFILE" --exclude vbox --exclude vmware --exclude $KEYFILE --exclude .chef . --exclude images ${SSH_USER}@$IP:chef-bcpc 
   rsync  $RSYNCEXTRA -avP -e "ssh -i $KEYFILE" vbox/$ISO ${SSH_USER}@$IP:chef-bcpc/cookbooks/bcpc/files/default/bins
   $SSH_CMD "cd $BCPC_DIR && ./setup_ssh_keys.sh ${KEYFILE}.pub"
 else
@@ -97,6 +97,7 @@ else
 fi
 
 echo "Updating server"
+$SSH_CMD "cd $BCPC_DIR && ./fix-apt.sh"
 $SSH_CMD "cd $BCPC_DIR && sudo apt-get -y update && sudo apt-get -y dist-upgrade"
 if [[ -n "$VBOX" && -z `$VBM snapshot bcpc-bootstrap list | grep dist-upgrade` ]]; then
   echo "Taking snapshot (VirtualBox)"
