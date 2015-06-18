@@ -2,10 +2,23 @@
 
 set -e
 
+VAGRANT=""
+if hash vagrant 2> /dev/null; then
+    if [[ "$2" = "nonvagrant" ]]; then
+	echo "Non vagrant"
+    else
+	echo "Vagrant"
+	VAGRANT="true"
+    fi
+else
+    echo "Non vagrant"
+fi
+
+
 # bash imports
 source ./virtualbox_env.sh
 
-if ! hash vagrant 2>/dev/null; then
+if [[ -n "$VAGRANT" ]]; then
     if [[ -z "$1" ]]; then
 	# only if vagrant not available do we need the param
 	echo "Usage: $0 <bootstrap node ip address> (start)"
@@ -53,8 +66,8 @@ for i in bcpc-vm1 bcpc-vm2 bcpc-vm3; do
      --mac="${MAC}" --interface=\${dev}
      %%
 EOF
-  if hash vagrant 2>/dev/null; then
-    vagrant ssh -c "$REGISTERCMD"
+  if [[ -n "$VAGRANT" ]]; then
+      vagrant ssh -c "$REGISTERCMD"
   else
       if hash sshpass 2>/dev/null; then
 	  echo ubuntu | sshpass -p ubuntu $SSHCMD -tt ubuntu@$1 "$REGISTERCMD"
@@ -66,7 +79,7 @@ EOF
 done
 
 SYNCCMD="sudo cobbler sync"
-if hash vagrant 2>/dev/null; then
+if [[ -n "$VAGRANT" ]]; then
   vagrant ssh -c "$SYNCCMD"
 else
   if hash sshpass 2>/dev/null; then
