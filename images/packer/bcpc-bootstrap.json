@@ -29,11 +29,7 @@
       "ssh_wait_timeout": "30m",
       "type": "virtualbox-iso",
       "vboxmanage": [
-<<<<<<< HEAD
         ["modifyvm", "{{.Name}}", "--memory", "1536"],
-=======
-        ["modifyvm", "{{.Name}}", "--memory", "8192"],
->>>>>>> Local changes for a test build
         ["modifyvm", "{{.Name}}", "--cpus", "2"],
         ["modifyvm", "{{.Name}}", "--rtcuseutc", "on"],
         ["modifyvm", "{{.Name}}", "--vram", "16"],
