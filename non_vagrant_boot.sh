@@ -57,15 +57,15 @@ if [[ ! -z "$UP" ]]; then
 	COBBLERDONE=`$BNDO "sudo cobbler system list | grep bcpc-vm3"`
 	if [[ -z "$COBBLERDONE" ]]; then
 	    ./enroll_cobbler.sh 10.0.100.3 start
-	    sleep 240
+	    sleep 360
 	    while true 
 	    do
-                RES=`./vm-to-cluster.sh local.lan Test-Laptop`
-                if [[ ! ${RES} =~ "FAILED" ]]; then
-		    break;
-                else
-		    sleep 10
-                fi
+            RES=`./vm-to-cluster.sh local.lan Test-Laptop`
+            if [[ ! ${RES} =~ "FAILED" ]]; then
+		        break;
+            else
+		        sleep 10
+            fi
 	    done
 	fi
         $BNDO "cd chef-bcpc && ./cluster-assign-roles.sh Test-Laptop"
