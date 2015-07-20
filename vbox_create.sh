@@ -275,7 +275,11 @@ function create_cluster_VMs {
       # Only if VM doesn't exist
       if ! $VBM list vms | grep "^\"${vm}\"" ; then
           $VBM createvm --name $vm --ostype Ubuntu_64 --basefolder $P --register
-          $VBM modifyvm $vm --memory $CLUSTER_VM_MEM
+          if [[ ${vm} = "bcpc-vm1" ]]; then
+              $VBM modifyvm $vm --memory 4000
+          else
+              $VBM modifyvm $vm --memory $CLUSTER_VM_MEM
+          fi
           $VBM modifyvm $vm --cpus $CLUSTER_VM_CPUS
           $VBM modifyvm $vm --vram 16
           $VBM storagectl $vm --name "SATA Controller" --add sata
