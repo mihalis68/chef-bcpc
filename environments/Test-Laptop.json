@@ -5,7 +5,8 @@
             "routemon" : {
                 "numfixes" : "10000"
             },
-	        "domain_name" : "local.lan",
+	        "hypervisor_domain" : "local.lan",
+	        "cluster_domain" : "bcpc.local.lan",
             "virt_type" : "qemu",
             "enabled": {
 		        "logging": false,
