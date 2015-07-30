@@ -67,7 +67,8 @@
                 "percona"      : "http://10.0.100.2/percona",
                 "openstack"    : "http://10.0.100.2/openstack",
                 "rabbitmq"     : "http://10.0.100.2/rabbitmq",
-                "ceph"         : "http://10.0.100.2/ceph"
+                "ceph"         : "http://10.0.100.2/ceph",
+                "zabbix"       : "http://10.0.100.2/zabbix"
             },
             "dns_servers" : [ "8.8.8.8", "8.8.4.4" ]
         },
