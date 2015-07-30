@@ -19,7 +19,7 @@
       "guest_os_type": "Ubuntu_64",
       "hard_drive_interface": "sata",
       "http_directory": "http",
-      "iso_checksum": "e23b1ed513e62b1b8a464120f6ea3a8ee611fe3607793d485d0022d8c7244e0c",
+      "iso_checksum": "9d7b9725990c21b1098157c9a0712159b3acc8eda5d930560b8294eb1d0cdc93",
       "iso_checksum_type": "sha256",
       "iso_url": "http://archive.ubuntu.com/ubuntu/dists/trusty-updates/main/installer-amd64/current/images/netboot/mini.iso",
       "output_directory": "../build/virtualbox/bcpc-bootstrap",
