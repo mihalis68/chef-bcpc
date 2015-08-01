@@ -23,6 +23,18 @@ if [[ -z "$CURL" ]]; then
   exit
 fi
 
+VAGRANT=""
+if hash vagrant 2> /dev/null; then
+    if [[ "$2" = "nonvagrant" ]]; then
+	echo "Non vagrant"
+    else
+	echo "Vagrant"
+	VAGRANT="true"
+    fi
+else
+    echo "Non vagrant"
+fi
+
 # Bootstrap VM Defaults (these need to be exported for Vagrant's Vagrantfile)
 # DO NOT EDIT THESE HERE, INSTEAD EDIT THEM IN vbox_override.sh
 export BOOTSTRAP_APT_MIRROR=${BOOTSTRAP_APT_MIRROR:-}
@@ -85,7 +97,7 @@ function download_VM_files {
   BOX='trusty-server-cloudimg-amd64-vagrant-disk1.box'
 
   # Can we create the bootstrap VM via Vagrant
-  if hash vagrant 2> /dev/null ; then
+  if [[ -n "$VAGRANT" ]]; then
     echo "Vagrant detected - downloading Vagrant box for bcpc-bootstrap VM"
     if [[ ! -f $BOX ]]; then
 	if [[ -f $CACHEDIR/$BOX ]]; then
@@ -144,7 +156,7 @@ function create_bootstrap_VM {
 
   remove_DHCPservers
 
-  if hash vagrant 2> /dev/null ; then
+  if [[ -n "$VAGRANT" ]]; then
     echo "Vagrant detected - using Vagrant to initialize bcpc-bootstrap VM"
     cp ../Vagrantfile .
     vagrant up
@@ -263,7 +275,11 @@ function create_cluster_VMs {
       # Only if VM doesn't exist
       if ! $VBM list vms | grep "^\"${vm}\"" ; then
           $VBM createvm --name $vm --ostype Ubuntu_64 --basefolder $P --register
-          $VBM modifyvm $vm --memory $CLUSTER_VM_MEM
+          if [[ ${vm} = "bcpc-vm1" ]]; then
+              $VBM modifyvm $vm --memory 4000
+          else
+              $VBM modifyvm $vm --memory $CLUSTER_VM_MEM
+          fi
           $VBM modifyvm $vm --cpus $CLUSTER_VM_CPUS
           $VBM modifyvm $vm --vram 16
           $VBM storagectl $vm --name "SATA Controller" --add sata
@@ -281,7 +297,7 @@ function create_cluster_VMs {
           $VBM modifyvm $vm --nic3 hostonly --hostonlyadapter3 "$VBN2"
 
           # Set hardware acceleration options
-          $VBM modifyvm $vm --largepages on --vtxvpid on --hwvirtex on --nestedpaging on --ioapic off
+          $VBM modifyvm $vm --largepages on --vtxvpid on --hwvirtex on --nestedpaging on --ioapic on
       fi
   done
 }
@@ -290,7 +306,7 @@ function install_cluster {
 environment=${1-Test-Laptop}
 ip=${2-10.0.100.3}
   # VMs are now created - if we are using Vagrant, finish the install process.
-  if hash vagrant 2> /dev/null ; then
+if [[ -n "$VAGRANT" ]]; then
     # N.B. As of Aug 2013, grub-pc gets confused and wants to prompt re: 3-way
     # merge.  Sigh.
     #vagrant ssh -c "sudo ucf -p /etc/default/grub"

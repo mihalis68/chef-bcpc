@@ -233,6 +233,9 @@ if [ ! -f python-requests-aws_0.1.6_all.deb ]; then
 fi
 FILES="python-requests-aws_0.1.6_all.deb $FILES"
 
+popd
+exit
+
 # Rally has a number of dependencies. Some of the dependencies are in apt by default but some are not. Those that
 # are not are built here.
 RALLY_VER="0.0.4"
