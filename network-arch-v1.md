@@ -216,6 +216,7 @@ Appendix B
 Network summary table
 
 |        |tagged |  routed |  nic assign|          
+| ---    | ---   | ---     | --- |
 |mgmt    |  n    |    y    |  1 or 2|
 |fixed   |  y    |    n    |  2|
 |float   |  y    |    y    |  2|
