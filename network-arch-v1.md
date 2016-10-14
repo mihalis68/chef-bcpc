@@ -1,4 +1,6 @@
-﻿##Introduction 
+﻿#Bloomberg Clustered Private Cloud - Network Architecture version 1.0
+
+##Introduction 
 
 This document defines the networks and related infrastructure necessary to 
 build a physical OpenStack cluster using Bloomberg's 'chef-bcpc' OpenStack 
@@ -20,20 +22,20 @@ to be met by the network build before a cluster can be built, and
 discrete networking hardware is not standardised enough for this to be
 scripted in a universal way.
 
-##Networks
+##Required Networks
 
 Running BCPC clusters require four core data networks to be configured
 on the cluster switch(es) and router(s), but typically use 3 or even
 just 2 physical NICs and cabling[1].
 
-Three of the BCPC networks use tagged VLANs and so require switch
-support for that (801.2Q). For good performance, cluster members
-typically need multiple high-speed NICs given the fully converged BCPC
-architecture ; fully converged, in this case, meaning that many nodes
-both host Ceph content and virtual machines (VMs) and so see both
-internal storage traffic (such as Ceph replication traffic) AND VM
-"north-south" i.e. off-cluster traffic such as webserver traffic to
-the outside world.
+Three of the four core BCPC networks use tagged VLANs and so require
+switch support for that (802.1Q). For good performance, cluster
+members typically need multiple high-speed NICs (10 or even 40Gb/s)
+given the fully converged BCPC architecture ; fully converged, in this
+case, meaning that many nodes both host Ceph content and virtual
+machines (VMs) and so see both internal storage traffic (such as Ceph
+replication traffic) AND VM "north-south" i.e. off-cluster traffic
+such as webserver traffic to the outside world.
 
 BCPC Cluster builds also typically require a 5th network for machine
 management (unless you use a lot of keyboards, mice and screens!). The
@@ -190,7 +192,9 @@ high bandwith NIC (if available) to handle the Ceph monitor traffic
 Setting the MTU is again supported for the storage in the recipes and
 is particularly important here since the storage network will
 typically be the busiest of the three cluster networks. Once again :
-don't set an MTU bigger than what your switches can handle.
+don't set an MTU bigger than what your switches can handle. If after
+testing you find 9000 byte MTUs work, that will be particularly
+beneficial for bulky storage replication traffic.
 
 This network uses a gateway only as a sanity check at build-time
 (cluster nodes ping each network gateway upon initial build to check
@@ -211,15 +215,17 @@ network VLAN interfaces come and go as nova network builds and tears
 down tenant networks and virtual NICs bridged to the physical NIC
 assigned to the float network.
 
-Appendix B
+###Appendix B
 
 Network summary table
 
 |        |tagged |  routed |  nic assign|          
 | ---    | ---   | ---     | --- |
-|mgmt    |  n    |    y    |  1 or 2|
+|mgmt    |  n    |    y    |  1|
 |fixed   |  y    |    n    |  2|
 |float   |  y    |    y    |  2|
-|storage |  y    |    x    |  3|
+|storage |  y    |    n    |  3|
 
+note: if you only use two NICs, mgmt, fixed and float should be on the
+first NIC and storage on the second
 
