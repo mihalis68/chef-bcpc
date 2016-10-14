@@ -151,7 +151,7 @@ Fixed (tenant) network VLAN IDs are chosen sequentially starting at an
 ID you specify in the Chef attributes (typically in the environment
 file) along with the subnet definition.
 
-###2. float network
+###3. float network
 
 The float network must be large enough to support the sum of every
 floating IP address provisioned to VMs PLUS one address for each
@@ -176,7 +176,7 @@ addresses i.e. for them to be able to serve traffic. The VLAN ID is
 specified in the Chef attributes, typically the environment file along
 with the subnet definition.
 
-###3. storage network
+###4. storage network
 
 The storage network only needs to be large enough to provide an
 address for every Ceph mon node and every Ceph OSD node, plus the
