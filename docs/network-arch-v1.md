@@ -1,4 +1,4 @@
-﻿#Bloomberg Clustered Private Cloud - Network Architecture version 1.0
+﻿#Bloomberg Clustered Private Cloud - Network Architecture v1.0
 
 ##Introduction 
 
@@ -69,7 +69,7 @@ The four data networks on a BCPC cluster are:
 ##Layer 2 spanning
 
 In this version of the BCPC network architecture, all networks are
-required to be simply-connected internally at layer 2 (the storage
+required to be simply-connected internally at Layer 2 (the storage
 network might not technically need this but we ignore this in V1).
 
 For small clusters, this simply means the cluster switch(es) must be
@@ -101,7 +101,7 @@ find suitably large ranges from the start (for example /18s or bigger)
 so that your cluster capacity growth and/or number of VMs is not
 constrained by running out of addresses.
 
-###1. management network
+### Management Network
 
 The management network must be large enough for every potential
 physical host in the cluster and any supporting machines such as the
@@ -119,7 +119,7 @@ externally reachable for hypervisor hosts to be reachable for
 OpenStack and Ceph administration. The mgmt network subnet and NIC are
 defined in the Chef attributes, typically in the environment file.
 
-###2. fixed network
+### Fixed Network
 
 Every VM receives a unique fixed IP address for its
 lifetime. Openstack documentation calls this either the "fixed" or the
@@ -151,7 +151,7 @@ Fixed (tenant) network VLAN IDs are chosen sequentially starting at an
 ID you specify in the Chef attributes (typically in the environment
 file) along with the subnet definition.
 
-###3. float network
+### Float Network
 
 The float network must be large enough to support the sum of every
 floating IP address provisioned to VMs PLUS one address for each
@@ -176,7 +176,7 @@ addresses i.e. for them to be able to serve traffic. The VLAN ID is
 specified in the Chef attributes, typically the environment file along
 with the subnet definition.
 
-###4. storage network
+### Storage Network
 
 The storage network only needs to be large enough to provide an
 address for every Ceph mon node and every Ceph OSD node, plus the
@@ -206,14 +206,17 @@ in the environment file.
 
 ###Appendix A
 
-Moving the mgmt network onto the same NIC as float : in your cluster
-environment file simply mention the same NIC name for the mgmt, the
-float and the fixed networks but for the float use the variant with
-the VLAN suffix. The recipes then configure a tagged VLAN interface
-permanently on the host for the float traffic, whereas the fixed
-network VLAN interfaces come and go as nova network builds and tears
-down tenant networks and virtual NICs bridged to the physical NIC
-assigned to the float network.
+####Moving the mgmt network onto the same NIC as float
+
+You can reduce your cabling needs by one link per host if the mgmt
+network runs on the same link as the float/fixed networks : In your
+cluster environment file simply mention the same NIC name for the
+mgmt, the float and the fixed networks but for the float use the
+variant with the VLAN suffix. The recipes then configure a tagged VLAN
+interface permanently on the host for the float traffic, whereas the
+fixed network VLAN interfaces come and go as nova network builds and
+tears down tenant networks and virtual NICs bridged to the physical
+NIC assigned to the float network.
 
 ###Appendix B
 
