@@ -215,7 +215,7 @@ configure when first attempting to build a physical cluster. For
 example a hypervisor host might have a built-in 1Gb link and an add-in
 high-speed additional network card such as a dual 10 or 40Gb/s
 adapter. Linux driver stability and device naming tends to be very
-stable for built-in NICs lik this. For this reason the default
+stable for built-in NICs like this. For this reason the default
 assumption in chef-bcpc is that the management network is wired
 separately to the float, fixed and storage networks. This allows you
 to get your operating system PXE-booted to each host without even
@@ -227,14 +227,16 @@ link as the float/fixed networks : In your cluster environment file
 simply mention the same NIC name for the mgmt, the float and the fixed
 networks but for the float use the variant with the VLAN suffix. The
 recipes then configure a tagged VLAN interface permanently on the host
-for the float traffic, whereas the fixed network VLAN interfaces come
-and go as nova network builds and tears down tenant networks and
-virtual NICs bridged to the physical NIC assigned to the float
-network.
+for the float traffic, whereas the fixed network's tagged VLAN
+interfaces come and go as nova network builds and tears down tenant
+networks and virtual NICs bridged to the physical NIC assigned to the
+float network.
 
 ###Appendix B
 
 ####Network summary table
+
+#####default
 
 |        |tagged |  routed |  nic assign|          
 | ---    | ---   | ---     | --- |
@@ -243,6 +245,15 @@ network.
 |float   |  y    |    y    |  2|
 |storage |  y    |    n    |  3|
 
+#####alternate
+
 note: if you only use two NICs, mgmt, fixed and float should be on the
-first NIC and storage on the second
+first NIC and storage on the second i.e.
+
+|        |tagged |  routed |  nic assign|          
+| ---    | ---   | ---     | --- |
+|mgmt    |  n    |    y    |  1|
+|fixed   |  y    |    n    |  1|
+|float   |  y    |    y    |  1|
+|storage |  y    |    n    |  2|
 
