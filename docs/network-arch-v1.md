@@ -20,7 +20,8 @@ When building a BCPC cluster on real hardware (discrete servers,
 switches, routers), however, there are some very specific requirements
 to be met by the network build before a cluster can be built, and
 discrete networking hardware is not standardised enough for this to be
-scripted in a universal way.
+scripted in a universal way. This document attempts to provide enough
+info to build such networks, enabling a physical BCPC cluster build.
 
 ##Required Networks
 
@@ -34,15 +35,16 @@ members typically need multiple high-speed NICs (10 or even 40Gb/s)
 given the fully converged BCPC architecture ; fully converged, in this
 case, meaning that many nodes both host Ceph content and virtual
 machines (VMs) and so see both internal storage traffic (such as Ceph
-replication traffic) AND VM "north-south" i.e. off-cluster traffic
-such as webserver traffic to the outside world.
+replication traffic) AND VM "north-south" traffic i.e. off-cluster
+traffic such as webserver traffic to the outside world.
 
-BCPC Cluster builds also typically require a 5th network for machine
-management (unless you use a lot of keyboards, mice and screens!). The
-management console ( 'BMC') supporting IPMI or similar vendor-specific
-interfaces for controlling power, boot order etc will often be on this
-separate network (sometimes known as the "out of band" or "OOB"
-network), however this document does not cover the OOB network.
+Note : BCPC Cluster builds also typically require a 5th network for
+machine management (unless you use a lot of keyboards, mice and
+screens!). The management console ( 'BMC') supporting IPMI or similar
+vendor-specific interfaces for controlling power, boot order etc will
+often be on this separate network (sometimes known as the "out of
+band" or "OOB" network), however this document does not cover the OOB
+network.
 
 [1] running on < 3 physical NICs is possible, see appendix A
 
@@ -76,18 +78,18 @@ For small clusters, this simply means the cluster switch(es) must be
 big enough for all hosts, or at least "play nice" together with
 spanning tree. For larger clusters, particularly if high reliability
 is a requirement, this requires some type of explicit Layer 2 spanning
-architecture (e.g. leaf/spine using MC-LAG) so as to extend the L2
-(broadcast) domain across multiple switches.
+architecture (e.g. leaf/spine using MC-LAG) so as to extend the Layer
+2 (broadcast) domain across multiple switches.
 
 ##Routing
 
-A BCPC cluster also requires a local layer 3 router, both to forward
+A BCPC cluster also requires a local Layer 3 router, both to forward
 traffic between the cluster networks and for north-south
 traffic. Modern data center class switches will be capable of this,
-but if using pure layer 2 cluster switches, a simple linux-based
+but if using pure Layer 2 cluster switches, a simple linux-based
 router can easily be configured for this given network access on a
 "trunk port". As an example the bootstrap node can be configured to
-provide routing for the cluster if connected to a trunk port. 
+provide routing for the cluster if connected to a trunk port.
 
 Note: If a "trunk port" is not explicitly supported by the switch, you just
 need to configure a port which will see all BCPC VLANs (mgmt, storage,
@@ -126,23 +128,23 @@ lifetime. Openstack documentation calls this either the "fixed" or the
 "private" address.
 
 Since the BCPC fixed network uses private addresses only seen within
-the cluster i.e. same L2 broadcast domain, it does not require
-external routing, so can be arbitrarily large e.g. a /16. An
+the cluster i.e. the same Layer 2 broadcast domain, it does not
+require external routing, so can be arbitrarily large e.g. a /16. An
 RFC1918-compliant address range would be a good choice.
 
 Each tenancy receives a distinct VLAN tag for its fixed network
-traffic.  Traffic originates from a VM on its fixed IP with this VLAN
+traffic. Traffic originates from a VM on its fixed IP with this VLAN
 tag and reaches the local hypervisor host via a linux bridge. If the
 traffic is for a destination outside of the tenant network it is
 rewritten to appear to come from a float IP address (either the one
 the VM has, or failing that the float assigned to the hypervisor
 host). Purely intra-tenancy traffic is not rewritten, however, so the
-packets source and destination addresses, as well as its VLAN tag are
+packets source and destination addresses, as well as its VLAN tag, are
 all seen by the cluster switches, so the cluster switches must allow
 traffic on these VLANs to pass.
 
 In summary then, the fixed network should be a private non-routable
-network but the switches must support tagged VLAN traffic for every
+network but the switches must support tagged VLANs for every
 individual tenancy to communicate privately, as well as the "float"
 tagged VLAN which supports intra-tenancy and north-south (off-cluster)
 traffic (see next section).
@@ -155,7 +157,7 @@ file) along with the subnet definition.
 
 The float network must be large enough to support the sum of every
 floating IP address provisioned to VMs PLUS one address for each
-physical hypervisor, plus the float network gateway (N.B. this implies
+physical hypervisor, PLUS the float network gateway (N.B. this implies
 a larger minimum size than the management or storage networks, for
 example).
 
@@ -189,11 +191,11 @@ high bandwith NIC (if available) to handle the Ceph monitor traffic
 (e.g. elections, heartbeats) and Ceph OSD traffic
 (e.g. replication). 
 
-Setting the MTU is again supported for the storage in the recipes and
-is particularly important here since the storage network will
-typically be the busiest of the three cluster networks. Once again :
-don't set an MTU bigger than what your switches can handle. If after
-testing you find 9000 byte MTUs work, that will be particularly
+Setting the MTU is again supported for the storage network in the
+recipes and is particularly important here since the storage network
+will typically be the busiest of the three cluster networks. Once
+again : don't set an MTU bigger than what your switches can handle. If
+after testing you find 9000 byte MTUs work, that will be particularly
 beneficial for bulky storage replication traffic.
 
 This network uses a gateway only as a sanity check at build-time
@@ -208,19 +210,31 @@ in the environment file.
 
 ####Moving the mgmt network onto the same NIC as float
 
-You can reduce your cabling needs by one link per host if the mgmt
-network runs on the same link as the float/fixed networks : In your
-cluster environment file simply mention the same NIC name for the
-mgmt, the float and the fixed networks but for the float use the
-variant with the VLAN suffix. The recipes then configure a tagged VLAN
-interface permanently on the host for the float traffic, whereas the
-fixed network VLAN interfaces come and go as nova network builds and
-tears down tenant networks and virtual NICs bridged to the physical
-NIC assigned to the float network.
+Using the default NIC with its own link to the switch can be easier to
+configure when first attempting to build a physical cluster. For
+example a hypervisor host might have a built-in 1Gb link and an add-in
+high-speed additional network card such as a dual 10 or 40Gb/s
+adapter. Linux driver stability and device naming tends to be very
+stable for built-in NICs lik this. For this reason the default
+assumption in chef-bcpc is that the management network is wired
+separately to the float, fixed and storage networks. This allows you
+to get your operating system PXE-booted to each host without even
+configuring high-bandwidth links nor VLANs.
+
+However, you can reduce your cabling needs and switch port consumption
+by one link and port per host if the mgmt network runs on the same
+link as the float/fixed networks : In your cluster environment file
+simply mention the same NIC name for the mgmt, the float and the fixed
+networks but for the float use the variant with the VLAN suffix. The
+recipes then configure a tagged VLAN interface permanently on the host
+for the float traffic, whereas the fixed network VLAN interfaces come
+and go as nova network builds and tears down tenant networks and
+virtual NICs bridged to the physical NIC assigned to the float
+network.
 
 ###Appendix B
 
-Network summary table
+####Network summary table
 
 |        |tagged |  routed |  nic assign|          
 | ---    | ---   | ---     | --- |
