@@ -170,7 +170,7 @@ EOH
 
 Vagrant.configure("2") do |config|
   # build list of all machines to provision at once
-  cluster_nodes = 3
+  cluster_nodes = 6
   monitoring_node_count = ENV['MONITORING_NODES'].to_i
   # nil.to_i is 0, so no need to check for nil explicitly
   unless monitoring_node_count == 0

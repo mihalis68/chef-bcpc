@@ -50,15 +50,20 @@ do_on_node vm-bootstrap "mkdir -p \$HOME/.chef && echo -e \"chef_server_url 'htt
   && $KNIFE bootstrap -x vagrant -P vagrant --sudo 10.0.100.3"
 
 # Initialize VM lists
-vms="vm1 vm2 vm3"
-if [ $MONITORING_NODES -gt 0 ]; then
-  i=1
-  while [ $i -le $MONITORING_NODES ]; do
-    mon_vm="vm`expr 3 + $i`"
-    mon_vms="$mon_vms $mon_vm"
-    i=`expr $i + 1`
-  done
-fi
+HEADS="vm1 vm2 vm3"
+WORKS="vm4 vm5"
+EPHEMS="vm6"
+MONITORING=
+vms="$HEADS $WORKS $EPHEMS $MONITORING"
+mon_vms="$MONITORING"
+#if [ $MONITORING_NODES -gt 0 ]; then
+#  i=1
+#  while [ $i -le $MONITORING_NODES ]; do
+#    mon_vm="vm`expr 3 + $i`"
+#    mon_vms="$mon_vms $mon_vm"
+#    i=`expr $i + 1`
+#  done
+#fi
 
 # install the knife-acl plugin into embedded knife, rsync the Chef repository into the non-root user
 # (vagrant)'s home directory, and add the dependency cookbooks from the file cache
@@ -102,8 +107,9 @@ do_on_node vm-bootstrap $ENVIRONMENT_SET
 
 do_on_node vm-bootstrap "$KNIFE node run_list set bcpc-vm-bootstrap.$BCPC_HYPERVISOR_DOMAIN 'role[BCPC-Hardware-Virtual],role[BCPC-Bootstrap]' \
   && $KNIFE node run_list set bcpc-vm1.$BCPC_HYPERVISOR_DOMAIN 'role[BCPC-Hardware-Virtual],role[BCPC-Headnode]' \
-  && $KNIFE node run_list set bcpc-vm2.$BCPC_HYPERVISOR_DOMAIN 'role[BCPC-Hardware-Virtual],role[BCPC-Worknode]' \
-  && $KNIFE node run_list set bcpc-vm3.$BCPC_HYPERVISOR_DOMAIN 'role[BCPC-Hardware-Virtual],role[BCPC-EphemeralWorknode]'"
+  && $KNIFE node run_list set bcpc-vm4.$BCPC_HYPERVISOR_DOMAIN 'role[BCPC-Hardware-Virtual],role[BCPC-Worknode]' \
+  && $KNIFE node run_list set bcpc-vm5.$BCPC_HYPERVISOR_DOMAIN 'role[BCPC-Hardware-Virtual],role[BCPC-Worknode]' \
+  && $KNIFE node run_list set bcpc-vm6.$BCPC_HYPERVISOR_DOMAIN 'role[BCPC-Hardware-Virtual],role[BCPC-EphemeralWorknode]'"
 
 # set bootstrap, vm1 and mon vms (if any) as admins so that they can write into the data bag
 ADMIN_SET="true && "
@@ -112,6 +118,7 @@ for vm in vm-bootstrap vm1 $mon_vms; do
 done
 ADMIN_SET="$ADMIN_SET :"
 do_on_node vm-bootstrap $ADMIN_SET
+
 
 # Clustered monitoring setup (>1 mon VM) requires completely initialized node attributes for chef to run
 # on each node successfully. If we are not converging automatically, set run_list (for mon VMs) and exit.
@@ -123,13 +130,22 @@ if [[ $BOOTSTRAP_CHEF_DO_CONVERGE -eq 0 ]]; then
   echo "BOOTSTRAP_CHEF_DO_CONVERGE is set to 0, skipping automatic convergence."
   exit 0
 else
-  # run Chef on each node
+    # run Chef on each node
   do_on_node vm-bootstrap "sudo chef-client"
-  for vm in $vms; do
+  for vm in vm1 vm4 vm5 vm6; do
     do_on_node $vm "sudo chef-client"
   done
   # run on head node one last time to update HAProxy with work node IPs
-  do_on_node vm1 "sudo chef-client"
+  do_on_node vm1 "usdo chef-client"
+
+  #add extra head nodes
+  do_on_node vm-bootstrap \
+	     "$KNIFE node run_list set bcpc-vm2.$BCPC_HYPERVISOR_DOMAIN 'role[BCPC-Hardware-Virtual],role[BCPC-Headnode]' \
+           && $KNIFE node run_list set bcpc-vm3.$BCPC_HYPERVISOR_DOMAIN 'role[BCPC-Hardware-Virtual],role[BCPC-Headnode]'"
+  for vm in vm1 vm2 vm3; do
+    do_on_node $vm "sudo chef-client"
+  done
+  
   # HUP OpenStack services on each node to ensure everything's in a working state
   for vm in $vms; do
     do_on_node $vm "sudo hup_openstack || true"

@@ -6,9 +6,6 @@
     "run_list": [
       "recipe[ubuntu]",
       "recipe[bcpc::packages-common]",
-      "recipe[bcpc::packages-debugging]",
-      "recipe[bcpc::apport]",
-      "recipe[bcpc::developer]",
       "recipe[bcpc::cpupower]",
       "recipe[bcpc::getty]",
       "recipe[ntp]",
