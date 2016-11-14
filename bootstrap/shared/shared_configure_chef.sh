@@ -136,13 +136,17 @@ else
     do_on_node $vm "sudo chef-client"
   done
   # run on head node one last time to update HAProxy with work node IPs
-  do_on_node vm1 "usdo chef-client"
+  do_on_node vm1 "sudo chef-client"
 
   #add extra head nodes
   do_on_node vm-bootstrap \
-	     "$KNIFE node run_list set bcpc-vm2.$BCPC_HYPERVISOR_DOMAIN 'role[BCPC-Hardware-Virtual],role[BCPC-Headnode]' \
-           && $KNIFE node run_list set bcpc-vm3.$BCPC_HYPERVISOR_DOMAIN 'role[BCPC-Hardware-Virtual],role[BCPC-Headnode]'"
-  for vm in vm1 vm2 vm3; do
+	     "$KNIFE node run_list set bcpc-vm2.$BCPC_HYPERVISOR_DOMAIN 'role[BCPC-Hardware-Virtual],role[BCPC-Headnode]'"
+  for vm in vm2 vm1; do
+    do_on_node $vm "sudo chef-client"
+  done
+  do_on_node vm-bootstrap \
+           "$KNIFE node run_list set bcpc-vm3.$BCPC_HYPERVISOR_DOMAIN 'role[BCPC-Hardware-Virtual],role[BCPC-Headnode]'"
+  for vm in vm3 vm1 vm2; do
     do_on_node $vm "sudo chef-client"
   done
   
