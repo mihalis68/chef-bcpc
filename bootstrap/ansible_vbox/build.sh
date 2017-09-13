@@ -51,13 +51,36 @@ vbm_import() {
 DEPLOYMENT_IMAGE=../../images/build/virtualbox/bcpc-deployment/packer-bcpc-deployment_ubuntu-14.04.2-amd64.ova
 BOOTSTRAP_IMAGE=../../images/build/virtualbox/bcpc-bootstrap/packer-bcpc-bootstrap_ubuntu-14.04.2-amd64.ova
 
-if [[ ! -f "${DEPLOYMENT_IMAGE}" ]]; then
-    echo "Can't find $DEPLOYMENT_IMAGE"
-    exit
-fi
-vbm_import "$DEPLOYMENT_IMAGE" bcpc-deployment
-if [[ ! -f "${BOOTSTRAP_IMAGE}" ]]; then
-    echo "Can't find $BOOTSTRAP_IMAGE"
-    exit
-fi
-vbm_import "$BOOTSTRAP_IMAGE" bcpc-bootstrap
+vb_nets() {
+    local -r vm="$1"
+    "$VBM" modifyvm $vm --nic1 nat
+    "$VBM" modifyvm $vm --nic2 hostonly --hostonlyadapter2 vboxnet0
+    "$VBM" modifyvm $vm --nic3 hostonly --hostonlyadapter3 vboxnet1
+    "$VBM" modifyvm $vm --nic4 hostonly --hostonlyadapter4 vboxnet2
+
+}
+
+import_image() {
+    local -r img="$1"
+    local -r vm="$2"
+    if [[ ! -f "${img}" ]]; then
+	echo "Can't find $img"
+	exit
+    fi
+    vbm_import $img $vm
+    vb_nets $vm
+}
+
+#import_image $BOOTSTRAP_IMAGE  bcpc-bootstrap
+#import_image $DEPLOYMENT_IMAGE bcpc-deployment
+
+#$VBM startvm bcpc-bootstrap bcpc-deployment
+
+SSHOPTS="-i ../../bootstrap_chef.id_rsa"
+SSH="ssh $SSHOPTS"
+
+$SSH  ubuntu@10.0.100.3  "ping -c1 10.0.100.10"
+$SSH  ubuntu@10.0.100.10 "ping -c1 10.0.100.3"
+
+$SSH  ubuntu@10.0.100.10 "sudo apt-get -y install git"
+$SSH  ubuntu@10.0.100.10 "git clone https://github.com/chef-bcpc.git chef-bcpc"
