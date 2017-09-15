@@ -106,6 +106,8 @@ $ source bin/activate .
 ```
 
 and the directory structure in this example is as follows
+
+```
 /home/cmorgan
 └── chef-bcpc
     ├── bootstrap
