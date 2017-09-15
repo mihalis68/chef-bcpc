@@ -40,7 +40,7 @@ Apt mirrors are bulky, so the location of your apt mirror is defined
 separately from other binaries. The Ansible build path for BCPC
 expects to copy an apt mirror to the bootstrap node, since it will
 become the apt mirror for the cluster members. Define this location in
-your group vars file by setting the controlnode_apt_mirror_dir
+your group vars file by setting the `controlnode_apt_mirror_dir`
 variable e.g. in this example edit
 ~/chef-bcpc/bootstrap/ansible_scripts/group_vars/Test-Laptop-Ansible
 
@@ -56,7 +56,7 @@ formal releases (for example to data center clusters) unmodified
 releases as zipfiles is cleaner.
 
 In this example we'll deploy chef-bcpc from the chef-bcpc clone
-(mentioned above), so uncomment chef_bcpc_deploy_from_dir in your
+(mentioned above), so uncomment `chef_bcpc_deploy_from_dir` in your
 `group vars` file and set it to $HOME/chef-bcpc.
 
 As an alternative you can specify a different chef-bcpc release
@@ -104,6 +104,25 @@ $ virtualenv git-staging
 $ cd git-staging
 $ source bin/activate .
 ```
+
+and the directory structure in this example is as follows
+/home/cmorgan
+└── chef-bcpc
+    ├── bootstrap
+    ├── cookbooks
+    ├── docs
+    ├── environments
+    ├── images
+    └──  roles
+    bcpc-deployment
+    └── git-staging
+    	├── bin
+    	├── bootstrap-files
+        ├── master
+    	├── include
+    	└── lib
+```
+
 
 
 
