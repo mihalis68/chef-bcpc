@@ -173,6 +173,7 @@ end
 # try to apt-get update immediately so that the bootstrap does not wander along for a while
 # and waste everyone's time in case our repo configuration set above is broken
 $repos_script << <<-EOH
+  rm -f /etc/apt/sources.list.d/ubuntu-esm-infra-trusty.list
   apt-get update
   apt-get -y autoremove
 EOH
