@@ -67,7 +67,7 @@ do_on_node bootstrap "sudo /opt/opscode/embedded/bin/gem install -l $FILECACHE_M
 # (this step will change later but using the existing build_bins script for now)
 echo "Building binaries..."
 
-do_on_node bootstrap "sudo apt-get update \
+do_on_node bootstrap "rm -f /etc/apt/sources.list.d/ubuntu-esm-infra-trusty.list && sudo apt-get update \
   && sudo apt-get -y autoremove \
   && cd \$HOME/chef-bcpc \
   && sudo bash -c 'export FILECACHE_MOUNT_POINT=$FILECACHE_MOUNT_POINT \
