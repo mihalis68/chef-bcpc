@@ -24,27 +24,27 @@
 # if the stack itself depends on them for its normal operation.
 
 # Network troubleshooting tools
-package "ethtool"
-package "bmon"
-package "tshark"
-package "nmap"
-package "iperf"
-package "curl"
-package "conntrack"
-package "dhcpdump"
+#package "ethtool"
+#package "bmon"
+#package "tshark"
+#package "nmap"
+#package "iperf"
+#package "curl"
+#package "conntrack"
+#package "dhcpdump"
 
 # I/O troubleshooting tools
-package "fio"
-package "bc"
-package "iotop"
+#package "fio"
+#package "bc"
+#package "iotop"
 
 # System troubleshooting tools
-package "htop"
-package "sysstat"
-package "linux-tools-common"
-package "linux-tools-#{node['kernel']['release']}"
+#package "htop"
+#package "sysstat"
+#package "linux-tools-common"
+#package "linux-tools-#{node['kernel']['release']}"
 
-package "sosreport"
+#package "sosreport"
 
 # Remove backports repository from Trusty builds since sosreport is now
 # available in trusty/main
