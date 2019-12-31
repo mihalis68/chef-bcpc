@@ -5,6 +5,7 @@
     "json_class": "Chef::Role",
     "run_list": [
       "role[BCPC-Compute]",
+      "role[BCPC-CephOSD]",
       "recipe[bcpc::extra-osd-worknode]"
     ],
     "description": "A functional compute node in a BCPC cluster",
