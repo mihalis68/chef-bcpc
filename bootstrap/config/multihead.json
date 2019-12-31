@@ -11,23 +11,38 @@
       "gateway": "10.0.2.2",
       "chef_role": "BCPC-Headnode"
     },
-    "bcpc-dev-r1n2": {
+    "bcpc-dev-r2n1": {
       "ip_address": "10.0.100.12",
       "gateway": "10.0.2.2",
       "chef_role": "BCPC-Headnode"
     },
-    "bcpc-dev-r1n3": {
+    "bcpc-dev-r3n1": {
       "ip_address": "10.0.100.13",
       "gateway": "10.0.2.2",
       "chef_role": "BCPC-Headnode"
     },
-    "bcpc-dev-r1n4": {
+    "bcpc-dev-r1n2": {
       "ip_address": "10.0.100.14",
       "gateway": "10.0.2.2",
       "chef_role": "BCPC-Worknode"
     },
-    "bcpc-dev-r1n5": {
+    "bcpc-dev-r2n2": {
       "ip_address": "10.0.100.15",
+      "gateway": "10.0.2.2",
+      "chef_role": "BCPC-Worknode"
+    },
+    "bcpc-dev-r3n2": {
+      "ip_address": "10.0.100.16",
+      "gateway": "10.0.2.2",
+      "chef_role": "BCPC-Worknode"
+    },
+    "bcpc-dev-r3n3": {
+      "ip_address": "10.0.100.17",
+      "gateway": "10.0.2.2",
+      "chef_role": "BCPC-Worknode"
+    },
+    "bcpc-dev-r3n4": {
+      "ip_address": "10.0.100.18",
       "gateway": "10.0.2.2",
       "chef_role": "BCPC-Worknode"
     }
