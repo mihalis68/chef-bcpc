@@ -7,9 +7,9 @@
       },
       "virt_type" : "qemu",
       "enabled": {
-        "logging": true,
-        "monitoring": true,
-        "metrics": true,
+        "logging": false,
+        "monitoring": false,
+        "metrics": false,
         "dns": true,
         "secure_fixed_networks" : false
       },
@@ -17,7 +17,7 @@
         "pgp_auto_adjust" : true,
         "hdd_disks" : [ "sdb", "sdc" ],
         "ssd_disks" : [ "sdd", "sde" ],
-        "chooseleaf" : "host"
+        "chooseleaf" : "rack"
       },
       "graphite": {
         "max_creates_per_min": "inf"
