@@ -35,24 +35,24 @@ if node['bcpc']['kernel_version']
   end
 end
 
-package "linux-image-extra-#{node['kernel']['release']}"
+#package "linux-image-extra-#{node['kernel']['release']}"
 
 # ensure ipmi_devintf module is inserted to create /dev/ipmi0 for monitoring
 # (on platforms without IPMI, the module will load but not create the dev node)
-bash 'modprobe-ipmi_devintf' do
-  code 'modprobe ipmi_devintf'
-  not_if 'lsmod | grep ipmi_devintf'
-end
+#bash 'modprobe-ipmi_devintf' do
+#  code 'modprobe ipmi_devintf'
+#  not_if 'lsmod | grep ipmi_devintf'
+#end
 
-bash 'add-ipmi_devintf-module' do
-    code 'echo "ipmi_devintf" >> /etc/modules'
-    not_if 'grep -e "^ipmi_devintf$" /etc/modules'
-end
+#bash 'add-ipmi_devintf-module' do
+#    code 'echo "ipmi_devintf" >> /etc/modules'
+#    not_if 'grep -e "^ipmi_devintf$" /etc/modules'
+#end
 
-bash 'add-ipmi_si-module' do
-    code 'echo "ipmi_si" >> /etc/modules'
-    not_if 'grep -e "^ipmi_si$" /etc/modules'
-end
+#bash 'add-ipmi_si-module' do
+#    code 'echo "ipmi_si" >> /etc/modules'
+#    not_if 'grep -e "^ipmi_si$" /etc/modules'
+#end
 
 template "/etc/default/grub" do
   source "system.etc_default_grub.erb"
